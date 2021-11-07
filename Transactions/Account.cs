@@ -2,11 +2,11 @@
 
 namespace Transactions
 {
+    public delegate void AccountHandler(string message);
+
     public sealed class Account
     {
-        public delegate void Message(string message);
-
-        public event Message Notify;
+        public event AccountHandler Notify;
         public decimal Sum { get; private set; }
         private Deposit Deposit { get; set; }
 
@@ -17,13 +17,17 @@ namespace Transactions
 
         public void PutMoney(decimal money)
         {
-            if (money >= 0) Sum += money;
-            Notify?.Invoke($"На счет поступило: {money}");
+            if (money >= 0)
+            {
+                Sum += money;
+                //if (Notify != null) Notify($"На счет поступило: {moneyArg}");
+                Notify?.Invoke($"На счет поступило: {money}");
+            }
         }
 
         public void TakeMoney(decimal money)
         {
-            if (Sum >= money && money >= 0)
+            if (Sum >= money && money > 0)
             {
                 Sum -= money;
                 Notify?.Invoke($"Со счета снято: {money}");
